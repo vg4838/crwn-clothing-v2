@@ -18,7 +18,7 @@ import {
 import {
   getCurrentUser,
   createUserDocumentFromAuth,
-  signInWithGooglePopup,
+  signInWithGoogle as signInWithGoogleAuth,
   signInAuthUserWithEmailAndPassword,
   createAuthUserWithEmailAndPassword,
   signOutUser,
@@ -64,8 +64,11 @@ export function* getSnapshotFromUserAuth(
 
 export function* signInWithGoogle() {
   try {
-    const { user } = yield* call(signInWithGooglePopup);
-    yield* call(getSnapshotFromUserAuth, user);
+    // signInWithRedirect doesn't return a result immediately
+    // The user will be redirected to Google and back
+    yield* call(signInWithGoogleAuth);
+    // No need to handle result here - redirect will bring user back
+    // and getCurrentUser will handle the authentication state
   } catch (error) {
     yield* put(signInFailed(error as Error));
   }

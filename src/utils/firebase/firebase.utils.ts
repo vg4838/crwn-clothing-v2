@@ -25,6 +25,7 @@ import {
 
 import { Category } from '../../store/categories/category.types';
 import { Order } from '../../store/orders/order.types';
+import { shouldUseRedirectFlow } from '../device/device.utils';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCwAr-dtyAlzieac1bWPbdkTTpGIeLba3w',
@@ -48,6 +49,11 @@ export const signInWithGooglePopup = () =>
   signInWithPopup(auth, googleProvider);
 export const signInWithGoogleRedirect = () =>
   signInWithRedirect(auth, googleProvider);
+
+// Universal redirect-based sign-in for all platforms (solves CORS and iOS issues)
+export const signInWithGoogle = () => {
+  return signInWithRedirect(auth, googleProvider);
+};
 
 export const db = getFirestore();
 
