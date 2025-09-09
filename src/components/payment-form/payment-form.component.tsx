@@ -1,10 +1,13 @@
 import { useState, FormEvent } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { StripeCardElement } from '@stripe/stripe-js';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-import { selectCartTotal } from '../../store/cart/cart.selector';
+import { selectCartTotal, selectCartItems } from '../../store/cart/cart.selector';
 import { selectCurrentUser } from '../../store/user/user.selector';
+import { createOrderStart } from '../../store/orders/order.action';
+import { clearCart } from '../../store/cart/cart.action';
 
 import { BUTTON_TYPE_CLASSES } from '../button/button.component';
 
@@ -21,7 +24,10 @@ const ifValidCardElement = (
 const PaymentForm = () => {
   const stripe = useStripe();
   const elements = useElements();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const amount = useSelector(selectCartTotal);
+  const cartItems = useSelector(selectCartItems);
   const currentUser = useSelector(selectCurrentUser);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
@@ -65,7 +71,22 @@ const PaymentForm = () => {
       alert(paymentResult.error);
     } else {
       if (paymentResult.paymentIntent.status === 'succeeded') {
-        alert('Payment Successful');
+        // Create order in Firebase
+        const orderData = {
+          items: cartItems,
+          total: amount,
+          subtotal: amount,
+          shipping: 0,
+          tax: 0,
+          paymentIntentId: paymentResult.paymentIntent.id,
+          userEmail: currentUser?.email || 'guest@example.com',
+        };
+
+        dispatch(createOrderStart(orderData));
+        dispatch(clearCart());
+
+        // Navigate to thank you page with order details
+        navigate(`/thank-you?orderId=${paymentResult.paymentIntent.id}&payment_intent=${paymentResult.paymentIntent.id}`);
       }
     }
   };

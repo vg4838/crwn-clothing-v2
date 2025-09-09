@@ -24,6 +24,7 @@ import {
 } from 'firebase/firestore';
 
 import { Category } from '../../store/categories/category.types';
+import { Order } from '../../store/orders/order.types';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCwAr-dtyAlzieac1bWPbdkTTpGIeLba3w',
@@ -153,4 +154,39 @@ export const getCurrentUser = (): Promise<User | null> => {
       reject
     );
   });
+};
+
+// Order management functions
+export const createOrderDocument = async (orderData: any) => {
+  const orderNumber = `ORD-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
+  const orderId = `${orderData.userId}_${Date.now()}`;
+  
+  const orderDocRef = doc(db, 'orders', orderId);
+  
+  const order = {
+    id: orderId,
+    orderNumber,
+    ...orderData,
+    shipping: 0, // Free shipping for now
+    tax: Math.round(orderData.subtotal * 0.08 * 100) / 100, // 8% tax
+  };
+
+  await setDoc(orderDocRef, order);
+  return order;
+};
+
+export const getUserOrders = async (userId: string): Promise<Order[]> => {
+  const ordersRef = collection(db, 'orders');
+  const q = query(ordersRef);
+  const querySnapshot = await getDocs(q);
+  
+  const orders = querySnapshot.docs
+    .map(doc => ({ 
+      ...doc.data(), 
+      createdAt: doc.data().createdAt.toDate() 
+    } as Order))
+    .filter((order: Order) => order.userId === userId)
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    
+  return orders;
 };
