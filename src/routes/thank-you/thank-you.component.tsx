@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { selectCurrentUser } from '../../store/user/user.selector';
-import { selectCartItems, selectCartTotal } from '../../store/cart/cart.selector';
+import { getUserOrders } from '../../utils/firebase/firebase.utils';
+import { Order } from '../../store/orders/order.types';
 
 import {
   ThankYouContainer,
@@ -33,8 +34,8 @@ const ThankYou = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const currentUser = useSelector(selectCurrentUser);
-  const cartItems = useSelector(selectCartItems);
-  const cartTotal = useSelector(selectCartTotal);
+  const [orderData, setOrderData] = useState<Order | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const orderId = searchParams.get('orderId');
   const paymentIntentId = searchParams.get('payment_intent');
@@ -43,8 +44,28 @@ const ThankYou = () => {
     // If no order ID or payment intent, redirect to home
     if (!orderId && !paymentIntentId) {
       navigate('/');
+      return;
     }
-  }, [orderId, paymentIntentId, navigate]);
+
+    // Fetch the order data from Firebase
+    const fetchOrderData = async () => {
+      if (currentUser) {
+        try {
+          const orders = await getUserOrders(currentUser.displayName || 'user');
+          // Find the most recent order (should be the one just created)
+          const latestOrder = orders[0];
+          if (latestOrder) {
+            setOrderData(latestOrder);
+          }
+        } catch (error) {
+          console.error('Error fetching order data:', error);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    fetchOrderData();
+  }, [orderId, paymentIntentId, navigate, currentUser]);
 
   const handleContinueShopping = () => {
     navigate('/shop');
@@ -55,6 +76,14 @@ const ThankYou = () => {
   };
 
   const formatPrice = (price: number) => `$${price.toFixed(2)}`;
+
+  if (isLoading) {
+    return (
+      <ThankYouContainer>
+        <div>Loading order details...</div>
+      </ThankYouContainer>
+    );
+  }
 
   return (
     <ThankYouContainer>
@@ -70,7 +99,7 @@ const ThankYou = () => {
         <OrderInfoGrid>
           <InfoItem>
             <InfoLabel>Order Number</InfoLabel>
-            <InfoValue>{orderId || paymentIntentId?.slice(-8).toUpperCase()}</InfoValue>
+            <InfoValue>{orderData?.orderNumber || orderId || paymentIntentId?.slice(-8).toUpperCase()}</InfoValue>
           </InfoItem>
           <InfoItem>
             <InfoLabel>Customer</InfoLabel>
@@ -82,7 +111,7 @@ const ThankYou = () => {
           </InfoItem>
           <InfoItem>
             <InfoLabel>Order Total</InfoLabel>
-            <InfoValue>{formatPrice(cartTotal)}</InfoValue>
+            <InfoValue>{formatPrice(orderData?.total || 0)}</InfoValue>
           </InfoItem>
         </OrderInfoGrid>
       </OrderDetailsSection>
@@ -91,7 +120,7 @@ const ThankYou = () => {
 
       <OrderSummarySection>
         <h3>Order Summary</h3>
-        {cartItems.map((item) => (
+        {orderData?.items?.map((item: any) => (
           <OrderItem key={item.id}>
             <OrderItemImage src={item.imageUrl} alt={item.name} />
             <OrderItemDetails>
@@ -100,16 +129,16 @@ const ThankYou = () => {
             </OrderItemDetails>
             <OrderItemPrice>{formatPrice(item.price * item.quantity)}</OrderItemPrice>
           </OrderItem>
-        ))}
+        )) || <div>No items found</div>}
         
         <TotalSection>
           <div>
-            <span>Subtotal: {formatPrice(cartTotal)}</span>
-            <span>Shipping: Free</span>
-            <span>Tax: Included</span>
+            <span>Subtotal: {formatPrice(orderData?.subtotal || 0)}</span>
+            <span>Shipping: {formatPrice(orderData?.shipping || 0)}</span>
+            <span>Tax: {formatPrice(orderData?.tax || 0)}</span>
           </div>
           <div>
-            <strong>Total: {formatPrice(cartTotal)}</strong>
+            <strong>Total: {formatPrice(orderData?.total || 0)}</strong>
           </div>
         </TotalSection>
       </OrderSummarySection>
