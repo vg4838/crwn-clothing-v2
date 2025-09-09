@@ -1,9 +1,12 @@
 import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import {
   selectCartItems,
   selectCartTotal,
 } from '../../store/cart/cart.selector';
+import { selectCurrentUser } from '../../store/user/user.selector';
 
 import CheckoutItem from '../../components/checkout-item/checkout-item.component';
 import PaymentForm from '../../components/payment-form/payment-form.component';
@@ -22,6 +25,21 @@ import {
 const Checkout = () => {
   const cartItems = useSelector(selectCartItems);
   const cartTotal = useSelector(selectCartTotal);
+  const currentUser = useSelector(selectCurrentUser);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    // If user is not authenticated, redirect to auth page and set redirect context
+    if (!currentUser) {
+      sessionStorage.setItem('redirectAfterAuth', '/checkout');
+      navigate('/auth');
+    }
+  }, [currentUser, navigate]);
+  
+  // Don't render checkout if user is not authenticated
+  if (!currentUser) {
+    return null;
+  }
   
   // Calculate tax (8% rate, same as payment form)
   const taxRate = 0.08;

@@ -25,15 +25,19 @@ import {
   AdditionalInformation,
 } from '../../utils/firebase/firebase.utils';
 
-// Navigation helper function
-const navigateTo = (path: string) => {
-  window.history.pushState({}, '', path);
-  window.dispatchEvent(new PopStateEvent('popstate'));
+// Navigation helper function using React Router
+const navigateToPage = (path: string) => {
+  // Use setTimeout to ensure navigation happens after Redux state updates
+  setTimeout(() => {
+    window.history.pushState(null, '', path);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  }, 100);
 };
 
 export function* getSnapshotFromUserAuth(
   userAuth: User,
-  additionalDetails?: AdditionalInformation
+  additionalDetails?: AdditionalInformation,
+  isSignUp: boolean = false
 ) {
   try {
     const userSnapshot = yield* call(
@@ -47,14 +51,20 @@ export function* getSnapshotFromUserAuth(
         signInSuccess({ id: userSnapshot.id, ...userSnapshot.data() })
       );
       
-      // Check for stored redirect URL
-      const redirectAfterAuth = sessionStorage.getItem('redirectAfterAuth');
-      if (redirectAfterAuth) {
-        sessionStorage.removeItem('redirectAfterAuth');
-        navigateTo(redirectAfterAuth);
+      // Handle navigation after successful authentication
+      if (isSignUp) {
+        // After sign-up, always redirect to home page
+        navigateToPage('/');
       } else {
-        // Navigate to home page after successful sign-in
-        navigateTo('/');
+        // For sign-in, check if user came from checkout
+        const redirectAfterAuth = sessionStorage.getItem('redirectAfterAuth');
+        if (redirectAfterAuth) {
+          sessionStorage.removeItem('redirectAfterAuth');
+          navigateToPage(redirectAfterAuth);
+        } else {
+          // Default redirect to home page for normal sign-in
+          navigateToPage('/');
+        }
       }
     }
   } catch (error) {
@@ -129,8 +139,6 @@ export function* signOut() {
   try {
     yield* call(signOutUser);
     yield* put(signOutSuccess());
-    // Navigate to sign-in page after successful sign-out
-    navigateTo('/auth');
   } catch (error) {
     yield* put(signOutFailed(error as Error));
   }
@@ -139,7 +147,7 @@ export function* signOut() {
 export function* signInAfterSignUp({
   payload: { user, additionalDetails },
 }: SignUpSuccess) {
-  yield* call(getSnapshotFromUserAuth, user, additionalDetails);
+  yield* call(getSnapshotFromUserAuth, user, additionalDetails, true);
 }
 
 export function* onGoogleSignInStart() {

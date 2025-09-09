@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -8,7 +9,7 @@ import { setIsCartOpen } from '../../store/cart/cart.action';
 
 import { CartIconContainer, ItemCount, ShoppingCartIcon } from './cart-icon.styles';
 
-const CartIcon = () => {
+const CartIcon = forwardRef<HTMLDivElement>((props, ref) => {
   const dispatch = useDispatch();
 
   const cartCount = useSelector(selectCartCount);
@@ -17,11 +18,13 @@ const CartIcon = () => {
   const toggleIsCartOpen = () => dispatch(setIsCartOpen(!isCartOpen));
 
   return (
-    <CartIconContainer onClick={toggleIsCartOpen}>
+    <CartIconContainer ref={ref} onClick={toggleIsCartOpen}>
       <ShoppingCartIcon>🛒</ShoppingCartIcon>
       <ItemCount>{cartCount}</ItemCount>
     </CartIconContainer>
   );
-};
+});
+
+CartIcon.displayName = 'CartIcon';
 
 export default CartIcon;

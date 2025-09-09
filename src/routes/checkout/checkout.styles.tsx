@@ -90,13 +90,37 @@ export const HeaderBlock = styled.div`
     width: 8%;
     justify-content: center;
   }
+
+  &:nth-child(3) {
+    width: 25%;
+  }
   
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 800px) {
     font-size: 11px;
     
-    &:nth-child(2) {
-      display: none; // Hide description on very small screens
+    &:first-child {
+      width: 20%;
     }
+    
+    &:nth-child(2) {
+      width: 20%;
+    }
+    
+    &:nth-child(3) {
+      width: 25%;
+    }
+    
+    &:nth-child(4) {
+      width: 20%;
+    }
+    
+    &:last-child {
+      width: 10%;
+    }
+  }
+  
+  @media screen and (max-width: 600px) {
+    font-size: 10px;
   }
 `;
 
@@ -153,8 +177,8 @@ export const Total = styled.div`
   }
   
   @media screen and (max-width: 800px) {
-    justify-content: center;
-    padding: 20px 25px;
+    justify-content: flex-end;
+    padding: 20px 15px;
     
     .breakdown {
       min-width: 180px;

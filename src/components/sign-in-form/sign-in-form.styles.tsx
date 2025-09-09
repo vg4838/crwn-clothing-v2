@@ -28,3 +28,14 @@ export const ButtonsContainer = styled.div`
     gap: 15px;
   }
 `;
+
+export const ErrorMessage = styled.div`
+  color: #f06543;
+  font-size: 14px;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #ffeaea;
+  border: 1px solid #f06543;
+  border-radius: 4px;
+  text-align: center;
+`;

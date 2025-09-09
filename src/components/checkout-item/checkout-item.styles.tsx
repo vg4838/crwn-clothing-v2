@@ -21,11 +21,9 @@ export const CheckoutItemContainer = styled.div`
   }
 
   @media screen and (max-width: 800px) {
-    flex-direction: column;
-    min-height: auto;
-    padding: 15px 10px;
-    font-size: 16px;
-    gap: 15px;
+    min-height: 80px;
+    padding: 10px 5px;
+    font-size: 14px;
   }
 `;
 
@@ -55,16 +53,16 @@ export const ImageContainer = styled.div`
   }
 
   @media screen and (max-width: 800px) {
-    width: 100%;
-    padding-right: 0;
+    width: 20%;
+    padding-right: 5px;
     justify-content: center;
     
     img {
-      width: 80px;
-      height: 80px;
+      width: 40px;
+      height: 40px;
       
       &:hover {
-        transform: scale(2.5);
+        transform: scale(2);
       }
     }
   }
@@ -78,10 +76,11 @@ export const BaseSpan = styled.span`
   color: #313638;
 
   @media screen and (max-width: 800px) {
-    width: 100%;
+    width: 20%;
     justify-content: center;
     text-align: center;
-    font-size: 16px;
+    font-size: 12px;
+    padding: 0 2px;
   }
 `;
 
@@ -91,6 +90,7 @@ export const Quantity = styled(BaseSpan)`
   justify-content: flex-start;
 
   @media screen and (max-width: 800px) {
+    width: 25%;
     justify-content: center;
   }
 `;
@@ -103,6 +103,11 @@ export const QuantityContainer = styled.div`
   border-radius: 8px;
   padding: 2px 4px;
   width: fit-content;
+
+  @media screen and (max-width: 800px) {
+    padding: 1px 2px;
+    border-radius: 4px;
+  }
 `;
 
 export const Arrow = styled.div`
@@ -123,6 +128,13 @@ export const Arrow = styled.div`
   &:hover {
     color: #f06543;
   }
+
+  @media screen and (max-width: 800px) {
+    font-size: 14px;
+    padding: 2px 4px;
+    min-width: 20px;
+    min-height: 20px;
+  }
 `;
 
 export const Value = styled.span`
@@ -132,6 +144,12 @@ export const Value = styled.span`
   font-weight: bold;
   font-size: 16px;
   color: #313638;
+
+  @media screen and (max-width: 800px) {
+    margin: 0 4px;
+    min-width: 15px;
+    font-size: 12px;
+  }
 `;
 
 export const RemoveButton = styled.div`
@@ -142,6 +160,9 @@ export const RemoveButton = styled.div`
   font-weight: bold;
   transition: all 0.2s ease;
   user-select: none;
+  width: 8%;
+  display: flex;
+  justify-content: center;
   
   &:hover {
     color: #f09d51;
@@ -154,6 +175,7 @@ export const RemoveButton = styled.div`
 
   @media screen and (max-width: 800px) {
     padding-left: 0;
-    font-size: 28px;
+    font-size: 18px;
+    width: 10%;
   }
 `;

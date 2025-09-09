@@ -26,6 +26,7 @@ const Navigation = () => {
   const currentUser = useSelector(selectCurrentUser);
   const isCartOpen = useSelector(selectIsCartOpen);
   const cartDropdownRef = useRef<HTMLDivElement>(null);
+  const cartIconRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
   const signOutUser = () => dispatch(signOutStart());
@@ -42,7 +43,9 @@ const Navigation = () => {
       if (
         isCartOpen &&
         cartDropdownRef.current &&
-        !cartDropdownRef.current.contains(event.target as Node)
+        cartIconRef.current &&
+        !cartDropdownRef.current.contains(event.target as Node) &&
+        !cartIconRef.current.contains(event.target as Node)
       ) {
         dispatch(setIsCartOpen(false));
       }
@@ -79,7 +82,7 @@ const Navigation = () => {
           ) : (
             <NavLink to='/sign-in'>SIGN IN</NavLink>
           )}
-          <CartIcon />
+          <CartIcon ref={cartIconRef} />
         </NavLinks>
         {isCartOpen && <CartDropdown ref={cartDropdownRef} />}
       </NavigationContainer>
