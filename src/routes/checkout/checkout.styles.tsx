@@ -153,8 +153,9 @@ export const Total = styled.div`
   
   .line-item {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
+    text-align: right;
     
     span {
       font-size: 16px;

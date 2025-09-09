@@ -35,13 +35,34 @@ export const CartItems = styled.div`
   height: 200px;
   display: flex;
   flex-direction: column;
-  overflow: scroll;
+  overflow-y: auto;
+  
+  /* Custom scrollbar styling for webkit browsers */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent; /* Remove vertical background */
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+  
+  /* For Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #888 transparent;
 `;
 
 export const CartTotal = styled.div`
   padding: 10px 0;
   margin-top: 10px;
-  border-top: 1px solid #e0e0e0;
   font-weight: 600;
   font-size: 16px;
   color: #333;
