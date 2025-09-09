@@ -37,6 +37,7 @@ export const Input = styled.input`
   border-radius: 0;
   border-bottom: 1px solid ${subColor};
   margin: 25px 0;
+  box-sizing: border-box;
 
   &:focus {
     outline: none;
@@ -44,6 +45,11 @@ export const Input = styled.input`
 
   &:focus ~ ${FormInputLabel} {
     ${shrinkLabelStyles};
+  }
+
+  @media screen and (max-width: 480px) {
+    font-size: 16px;
+    padding: 8px 8px 8px 5px;
   }
 `;
 

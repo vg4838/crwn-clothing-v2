@@ -35,6 +35,11 @@ export const TableSection = styled.div`
   min-width: 0;
   display: flex;
   flex-direction: column;
+  
+  @media screen and (max-width: 1024px) {
+    width: 100%;
+    flex: none;
+  }
 `;
 
 export const PaymentSection = styled.div`
