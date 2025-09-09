@@ -18,7 +18,7 @@ import {
 import {
   getCurrentUser,
   createUserDocumentFromAuth,
-  signInWithGooglePopup,
+  signInWithGoogle,
   signInAuthUserWithEmailAndPassword,
   createAuthUserWithEmailAndPassword,
   signOutUser,
@@ -62,10 +62,15 @@ export function* getSnapshotFromUserAuth(
   }
 }
 
-export function* signInWithGoogle() {
+export function* signInWithGoogleSaga() {
   try {
-    const { user } = yield* call(signInWithGooglePopup);
-    yield* call(getSnapshotFromUserAuth, user);
+    const result = yield* call(signInWithGoogle);
+    
+    // For redirect flow, result will be null and we need to handle it differently
+    if (result && result.user) {
+      yield* call(getSnapshotFromUserAuth, result.user);
+    }
+    // For redirect flow, the auth state change will be handled by isUserAuthenticated
   } catch (error) {
     yield* put(signInFailed(error as Error));
   }
@@ -137,7 +142,7 @@ export function* signInAfterSignUp({
 }
 
 export function* onGoogleSignInStart() {
-  yield* takeLatest(USER_ACTION_TYPES.GOOGLE_SIGN_IN_START, signInWithGoogle);
+  yield* takeLatest(USER_ACTION_TYPES.GOOGLE_SIGN_IN_START, signInWithGoogleSaga);
 }
 
 export function* onCheckUserSession() {
