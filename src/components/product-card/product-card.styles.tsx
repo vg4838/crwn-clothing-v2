@@ -14,12 +14,6 @@ export const ProductCartContainer = styled.div`
   transition: all 0.3s ease;
   border: 1px solid #f0f0f0;
 
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    border-color: #e0e0e0;
-  }
-
   img {
     width: 100%;
     height: 75%;
@@ -42,6 +36,10 @@ export const ProductCartContainer = styled.div`
   }
 
   &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: #e0e0e0;
+
     img {
       transform: scale(1.05);
     }
