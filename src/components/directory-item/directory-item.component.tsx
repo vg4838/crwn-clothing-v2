@@ -9,18 +9,19 @@ import {
   DirectoryItemContainer,
 } from './directory-item.styles';
 
-type DirectoryItemProps = {
+export type DirectoryItemProps = {
   category: DirectoryCategory;
+  isHero?: boolean;
 };
 
-const DirectoryItem: FC<DirectoryItemProps> = ({ category }) => {
+const DirectoryItem: FC<DirectoryItemProps> = ({ category, isHero = false }) => {
   const { imageUrl, title, route } = category;
   const navigate = useNavigate();
 
   const onNavigateHandler = () => navigate(route);
 
   return (
-    <DirectoryItemContainer onClick={onNavigateHandler}>
+    <DirectoryItemContainer onClick={onNavigateHandler} $isHero={isHero}>
       <BackgroundImage imageUrl={imageUrl} />
       <Body>
         <h2>{title}</h2>

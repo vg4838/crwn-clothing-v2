@@ -9,7 +9,7 @@ export const OrdersContainer = styled.div`
 
 export const OrdersHeader = styled.h1`
   font-size: 2.5rem;
-  color: #333;
+  color: #313638;
   margin-bottom: 10px;
   font-weight: 300;
   text-align: center;
@@ -17,7 +17,7 @@ export const OrdersHeader = styled.h1`
 
 export const OrdersSubtext = styled.p`
   font-size: 1.1rem;
-  color: #666;
+  color: #313638;
   margin-bottom: 40px;
   text-align: center;
   line-height: 1.6;
@@ -31,7 +31,7 @@ export const OrdersList = styled.div`
 
 export const OrderCard = styled.div`
   background-color: white;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e8e9eb;
   border-radius: 8px;
   padding: 25px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -48,7 +48,7 @@ export const OrderHeader = styled.div`
   align-items: flex-start;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #e8e9eb;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -58,14 +58,14 @@ export const OrderHeader = styled.div`
 
 export const OrderId = styled.h3`
   font-size: 1.2rem;
-  color: #333;
+  color: #313638;
   margin: 0 0 5px 0;
   font-weight: 600;
 `;
 
 export const OrderDate = styled.p`
   font-size: 0.9rem;
-  color: #666;
+  color: #313638;
   margin: 0;
 `;
 
@@ -83,7 +83,7 @@ export const OrderStatus = styled.span<{ color: string }>`
 
 export const OrderTotal = styled.div`
   font-size: 1.3rem;
-  color: #333;
+  color: #313638;
   font-weight: 700;
   text-align: right;
 
@@ -102,7 +102,7 @@ export const OrderItem = styled.div`
   display: flex;
   align-items: center;
   padding: 10px 0;
-  border-bottom: 1px solid #f8f8f8;
+  border-bottom: 1px solid #e8e9eb;
 
   &:last-child {
     border-bottom: none;
@@ -125,19 +125,19 @@ export const OrderItemDetails = styled.div`
 
 export const OrderItemName = styled.span`
   font-size: 1rem;
-  color: #333;
+  color: #313638;
   font-weight: 500;
   margin-bottom: 5px;
 `;
 
 export const OrderItemQuantity = styled.span`
   font-size: 0.9rem;
-  color: #666;
+  color: #313638;
 `;
 
 export const OrderItemPrice = styled.span`
   font-size: 1rem;
-  color: #333;
+  color: #313638;
   font-weight: 600;
   min-width: 80px;
   text-align: right;
@@ -164,21 +164,21 @@ export const EmptyOrdersText = styled.div`
 
   h2 {
     font-size: 1.8rem;
-    color: #333;
+    color: #313638;
     margin-bottom: 10px;
     font-weight: 300;
   }
 
   p {
     font-size: 1.1rem;
-    color: #666;
+    color: #313638;
     line-height: 1.6;
     max-width: 400px;
   }
 `;
 
 export const ShopNowButton = styled.button`
-  background-color: black;
+  background-color: #313638;
   color: white;
   border: none;
   padding: 15px 30px;
@@ -190,8 +190,8 @@ export const ShopNowButton = styled.button`
   min-width: 180px;
 
   &:hover {
-    background-color: #333;
+    background-color: #f06543;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(240, 101, 67, 0.3);
   }
 `;

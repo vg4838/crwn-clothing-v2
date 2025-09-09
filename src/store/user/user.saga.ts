@@ -46,8 +46,16 @@ export function* getSnapshotFromUserAuth(
       yield* put(
         signInSuccess({ id: userSnapshot.id, ...userSnapshot.data() })
       );
-      // Navigate to home page after successful sign-in
-      navigateTo('/');
+      
+      // Check for stored redirect URL
+      const redirectAfterAuth = sessionStorage.getItem('redirectAfterAuth');
+      if (redirectAfterAuth) {
+        sessionStorage.removeItem('redirectAfterAuth');
+        navigateTo(redirectAfterAuth);
+      } else {
+        // Navigate to home page after successful sign-in
+        navigateTo('/');
+      }
     }
   } catch (error) {
     yield* put(signInFailed(error as Error));

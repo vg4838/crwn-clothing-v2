@@ -1,5 +1,6 @@
 import { Fragment } from 'react';
 import { useSelector } from 'react-redux';
+import styled from 'styled-components';
 
 import {
   selectCategoriesMap,
@@ -9,12 +10,20 @@ import {
 import CategoryPreview from '../../components/category-preview/category-preview.component';
 import Spinner from '../../components/spinner/spinner.component';
 
+const CategoriesPreviewContainer = styled.div`
+  padding: 20px 40px;
+  
+  @media screen and (max-width: 768px) {
+    padding: 20px;
+  }
+`;
+
 const CategoriesPreview = () => {
   const categoriesMap = useSelector(selectCategoriesMap);
   const isLoading = useSelector(selectCategoriesIsLoading);
 
   return (
-    <Fragment>
+    <CategoriesPreviewContainer>
       {isLoading ? (
         <Spinner />
       ) : (
@@ -25,7 +34,7 @@ const CategoriesPreview = () => {
           );
         })
       )}
-    </Fragment>
+    </CategoriesPreviewContainer>
   );
 };
 

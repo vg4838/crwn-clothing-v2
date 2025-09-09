@@ -13,6 +13,7 @@ import {
   ImageContainer,
   BaseSpan,
   Quantity,
+  QuantityContainer,
   Arrow,
   Value,
   RemoveButton,
@@ -42,11 +43,13 @@ const CheckoutItem: FC<CheckoutItemProps> = ({ cartItem }) => {
       </ImageContainer>
       <BaseSpan> {name} </BaseSpan>
       <Quantity>
-        <Arrow onClick={removeItemHandler}>&#10094;</Arrow>
-        <Value>{quantity}</Value>
-        <Arrow onClick={addItemHandler}>&#10095;</Arrow>
+        <QuantityContainer>
+          <Arrow onClick={removeItemHandler}>-</Arrow>
+          <Value>{quantity}</Value>
+          <Arrow onClick={addItemHandler}>+</Arrow>
+        </QuantityContainer>
       </Quantity>
-      <BaseSpan> {price}</BaseSpan>
+      <BaseSpan> {price * quantity}</BaseSpan>
       <RemoveButton onClick={clearItemHandler}>&#10005;</RemoveButton>
     </CheckoutItemContainer>
   );

@@ -35,9 +35,13 @@ const removeCartItem = (
     (cartItem) => cartItem.id === cartItemToRemove.id
   );
 
-  // check if quantity is equal to 1, if it is remove that item from the cart
+  // check if quantity is equal to 1, if it is set quantity to 0 instead of removing
   if (existingCartItem && existingCartItem.quantity === 1) {
-    return cartItems.filter((cartItem) => cartItem.id !== cartItemToRemove.id);
+    return cartItems.map((cartItem) =>
+      cartItem.id === cartItemToRemove.id
+        ? { ...cartItem, quantity: 0 }
+        : cartItem
+    );
   }
 
   // return back cartitems with matching cart item with reduced quantity

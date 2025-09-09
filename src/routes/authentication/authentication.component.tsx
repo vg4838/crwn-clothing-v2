@@ -1,15 +1,15 @@
-import SignUpForm from '../../components/sign-up-form/sign-up-form.component';
-import SignInForm from '../../components/sign-in-form/sign-in-form.component';
-
-import { AuthenticationContainer } from './authentication.styles';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Authentication = () => {
-  return (
-    <AuthenticationContainer>
-      <SignInForm />
-      <SignUpForm />
-    </AuthenticationContainer>
-  );
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirect to sign-in page when accessing /auth
+    navigate('/sign-in', { replace: true });
+  }, [navigate]);
+
+  return null;
 };
 
 export default Authentication;

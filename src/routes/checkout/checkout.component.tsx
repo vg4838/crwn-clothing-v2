@@ -12,7 +12,11 @@ import {
   CheckoutContainer,
   CheckoutHeader,
   HeaderBlock,
+  TableContainer,
   Total,
+  MainContent,
+  TableSection,
+  PaymentSection,
 } from './checkout.styles';
 
 const Checkout = () => {
@@ -21,28 +25,38 @@ const Checkout = () => {
 
   return (
     <CheckoutContainer>
-      <CheckoutHeader>
-        <HeaderBlock>
-          <span>Product</span>
-        </HeaderBlock>
-        <HeaderBlock>
-          <span>Description</span>
-        </HeaderBlock>
-        <HeaderBlock>
-          <span>Quantity</span>
-        </HeaderBlock>
-        <HeaderBlock>
-          <span>Price</span>
-        </HeaderBlock>
-        <HeaderBlock>
-          <span>Remove</span>
-        </HeaderBlock>
-      </CheckoutHeader>
-      {cartItems.map((cartItem) => (
-        <CheckoutItem key={cartItem.id} cartItem={cartItem} />
-      ))}
-      <Total>Total: ${cartTotal}</Total>
-      <PaymentForm />
+      <MainContent>
+        <TableSection>
+          <CheckoutHeader>
+            <HeaderBlock>
+              <span>Product</span>
+            </HeaderBlock>
+            <HeaderBlock>
+              <span>Description</span>
+            </HeaderBlock>
+            <HeaderBlock>
+              <span>Quantity</span>
+            </HeaderBlock>
+            <HeaderBlock>
+              <span>Price</span>
+            </HeaderBlock>
+            <HeaderBlock>
+              <span>Remove</span>
+            </HeaderBlock>
+          </CheckoutHeader>
+          <TableContainer>
+            {cartItems.map((cartItem) => (
+              <CheckoutItem key={cartItem.id} cartItem={cartItem} />
+            ))}
+            <Total>
+              <span>Total: ${cartTotal}</span>
+            </Total>
+          </TableContainer>
+        </TableSection>
+        <PaymentSection>
+          <PaymentForm />
+        </PaymentSection>
+      </MainContent>
     </CheckoutContainer>
   );
 };

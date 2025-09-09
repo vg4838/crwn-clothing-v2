@@ -5,21 +5,31 @@ import { useNavigate } from 'react-router-dom';
 
 import Button from '../button/button.component';
 import CartItem from '../cart-item/cart-item.component';
-import { selectCartItems } from '../../store/cart/cart.selector';
+import { selectCartItems, selectCartTotal } from '../../store/cart/cart.selector';
+import { selectCurrentUser } from '../../store/user/user.selector';
 
 import {
   CartDropdownContainer,
   EmptyMessage,
   CartItems,
+  CartTotal,
 } from './cart-dropdown.styles';
 
 const CartDropdown = forwardRef<HTMLDivElement>((props, ref) => {
   const cartItems = useSelector(selectCartItems);
+  const cartTotal = useSelector(selectCartTotal);
+  const currentUser = useSelector(selectCurrentUser);
   const navigate = useNavigate();
 
   const goToCheckoutHandler = useCallback(() => {
-    navigate('/checkout');
-  }, [navigate]);
+    if (currentUser) {
+      navigate('/checkout');
+    } else {
+      // Store the intended destination in sessionStorage
+      sessionStorage.setItem('redirectAfterAuth', '/checkout');
+      navigate('/sign-in');
+    }
+  }, [navigate, currentUser]);
 
   return (
     <CartDropdownContainer ref={ref}>
@@ -30,6 +40,9 @@ const CartDropdown = forwardRef<HTMLDivElement>((props, ref) => {
           <EmptyMessage>Your cart is empty</EmptyMessage>
         )}
       </CartItems>
+      {cartItems.length > 0 && (
+        <CartTotal>Total: ${cartTotal}</CartTotal>
+      )}
       <Button onClick={goToCheckoutHandler}>GO TO CHECKOUT</Button>
     </CartDropdownContainer>
   );

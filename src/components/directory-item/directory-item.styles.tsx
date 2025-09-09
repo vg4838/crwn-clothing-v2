@@ -4,73 +4,126 @@ type BackgroundImageProps = {
   imageUrl: string;
 };
 
+type DirectoryItemContainerProps = {
+  $isHero: boolean;
+};
+
 export const BackgroundImage = styled.div<BackgroundImageProps>`
   width: 100%;
   height: 100%;
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   background-image: ${({ imageUrl }) => `url(${imageUrl})`};
+  transition: transform 0.3s ease;
 `;
 
 export const Body = styled.div`
-  height: 90px;
-  padding: 0 25px;
+  height: 100px;
+  padding: 0 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1px solid black;
-  background-color: white;
-  opacity: 0.7;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
   position: absolute;
+  z-index: 2;
+  transition: all 0.3s ease;
 
   h2 {
-    font-weight: bold;
-    margin: 0 6px 0;
-    font-size: 22px;
-    color: #4a4a4a;
+    font-weight: 700;
+    margin: 0;
+    font-size: 24px;
+    color: #2c3e50;
     text-transform: uppercase;
+    letter-spacing: 1px;
   }
 
   p {
-    font-weight: lighter;
+    font-weight: 600;
     font-size: 16px;
+    color: #34495e;
+    margin-top: 8px;
   }
 `;
 
-export const DirectoryItemContainer = styled.div`
-  min-width: 30%;
-  height: 240px;
-  flex: 1 1 auto;
+export const DirectoryItemContainer = styled.div<DirectoryItemContainerProps>`
+  width: 100%;
+  height: ${({ $isHero }) => $isHero ? '60vh' : '100%'};
+  min-height: ${({ $isHero }) => $isHero ? '400px' : '300px'};
+  max-height: ${({ $isHero }) => $isHero ? '500px' : '400px'};
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid black;
-  margin: 0 7.5px 15px;
   overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
 
-  &:first-child {
-    margin-right: 7.5px;
-  }
-
-  &:last-child {
-    margin-left: 7.5px;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+    transition: all 0.3s ease;
   }
 
   &:hover {
-    cursor: pointer;
+    &::before {
+      background: rgba(0, 0, 0, 0.5);
+    }
 
     ${BackgroundImage} {
       transform: scale(1.1);
-      transition: transform 6s cubic-bezier(0.25, 0.45, 0.45, 0.95);
     }
 
     ${Body} {
-      opacity: 0.9;
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.95);
     }
   }
 
-  @media screen and (max-width: 800px) {
-    height: 200px;
+  /* Hero item styling */
+  ${({ $isHero }) => $isHero && `
+    ${Body} {
+      height: 120px;
+      padding: 0 40px;
+      
+      h2 {
+        font-size: 32px;
+        margin-bottom: 8px;
+      }
+      
+      p {
+        font-size: 18px;
+        font-weight: 500;
+      }
+    }
+  `}
+
+  @media screen and (max-width: 768px) {
+    height: ${({ $isHero }) => $isHero ? '50vh' : '100%'};
+    min-height: ${({ $isHero }) => $isHero ? '300px' : '250px'};
+    max-height: ${({ $isHero }) => $isHero ? '400px' : '300px'};
+    
+    ${({ $isHero }) => $isHero && `
+      ${Body} {
+        height: 100px;
+        padding: 0 30px;
+        
+        h2 {
+          font-size: 28px;
+        }
+        
+        p {
+          font-size: 16px;
+        }
+      }
+    `}
   }
 `;

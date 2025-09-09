@@ -26,11 +26,11 @@ const CartItem: FC<CartItemProps> = ({ cartItem }) => {
       <ItemDetails>
         <span>{name}</span>
         <QuantityContainer>
-          <Arrow onClick={removeItemHandler}>&#10094;</Arrow>
+          <Arrow onClick={removeItemHandler}>-</Arrow>
           <Value>{quantity}</Value>
-          <Arrow onClick={addItemHandler}>&#10095;</Arrow>
+          <Arrow onClick={addItemHandler}>+</Arrow>
         </QuantityContainer>
-        <span>${price}</span>
+        <span>${price * quantity}</span>
         <RemoveButton onClick={clearItemHandler}>&#10005;</RemoveButton>
       </ItemDetails>
     </CartItemContainer>

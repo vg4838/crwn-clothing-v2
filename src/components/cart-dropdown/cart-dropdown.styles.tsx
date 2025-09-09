@@ -32,8 +32,18 @@ export const EmptyMessage = styled.span`
 `;
 
 export const CartItems = styled.div`
-  height: 240px;
+  height: 200px;
   display: flex;
   flex-direction: column;
   overflow: scroll;
+`;
+
+export const CartTotal = styled.div`
+  padding: 10px 0;
+  margin-top: 10px;
+  border-top: 1px solid #e0e0e0;
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  text-align: right;
 `;

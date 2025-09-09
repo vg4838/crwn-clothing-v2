@@ -15,11 +15,36 @@ import {
   PaymentFormContainer,
   FormContainer,
   PaymentButton,
+  CardElementContainer,
+  SecurityBadge,
+  TestCardInfo,
 } from './payment-form.styles';
 
 const ifValidCardElement = (
   card: StripeCardElement | null
 ): card is StripeCardElement => card !== null;
+
+const cardElementOptions = {
+  style: {
+    base: {
+      fontSize: '16px',
+      color: '#2c3e50',
+      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+      fontSmoothing: 'antialiased',
+      '::placeholder': {
+        color: '#95a5a6',
+      },
+    },
+    invalid: {
+      color: '#e74c3c',
+      iconColor: '#e74c3c',
+    },
+    complete: {
+      color: '#27ae60',
+      iconColor: '#27ae60',
+    },
+  },
+};
 
 const PaymentForm = () => {
   const stripe = useStripe();
@@ -94,14 +119,23 @@ const PaymentForm = () => {
   return (
     <PaymentFormContainer>
       <FormContainer onSubmit={paymentHandler}>
-        <h2>Credit Card Payment: </h2>
-        <CardElement />
+        <h2>💳 Secure Payment</h2>
+        <CardElementContainer>
+          <CardElement options={cardElementOptions} />
+        </CardElementContainer>
+        <p style={{ color: '#e74c3c', fontSize: '14px', textAlign: 'center', margin: '10px 0 20px 0' }}>
+          *Use card: 4242424242424242 with valid future expiry and CVV
+        </p>
         <PaymentButton
           isLoading={isProcessingPayment}
           buttonType={BUTTON_TYPE_CLASSES.inverted}
+          disabled={isProcessingPayment}
         >
-          Pay now
+          {isProcessingPayment ? '🔄 Processing...' : `💰 Pay $${amount}`}
         </PaymentButton>
+        <SecurityBadge>
+          Your payment information is secure and encrypted
+        </SecurityBadge>
       </FormContainer>
     </PaymentFormContainer>
   );
