@@ -64,11 +64,14 @@ export function* getSnapshotFromUserAuth(
 
 export function* signInWithGoogle() {
   try {
-    // signInWithRedirect doesn't return a result immediately
-    // The user will be redirected to Google and back
-    yield* call(signInWithGoogleAuth);
-    // No need to handle result here - redirect will bring user back
-    // and getCurrentUser will handle the authentication state
+    const result = yield* call(signInWithGoogleAuth);
+    // Handle both popup and redirect results
+    if (result && result.user) {
+      // Popup authentication - we get the user immediately
+      yield* call(getSnapshotFromUserAuth, result.user);
+    }
+    // If redirect authentication was used, the user will be redirected
+    // and the authentication state will be handled by getCurrentUser on return
   } catch (error) {
     yield* put(signInFailed(error as Error));
   }

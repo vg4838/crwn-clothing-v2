@@ -50,9 +50,21 @@ export const signInWithGooglePopup = () =>
 export const signInWithGoogleRedirect = () =>
   signInWithRedirect(auth, googleProvider);
 
-// Universal redirect-based sign-in for all platforms (solves CORS and iOS issues)
-export const signInWithGoogle = () => {
-  return signInWithRedirect(auth, googleProvider);
+// Smart sign-in function that tries popup first, falls back to redirect on error
+export const signInWithGoogle = async () => {
+  try {
+    // Try popup first (works on desktop)
+    return await signInWithPopup(auth, googleProvider);
+  } catch (error: any) {
+    // If popup fails (CORS, iOS, etc.), fall back to redirect
+    if (error.code === 'auth/popup-blocked' || 
+        error.code === 'auth/popup-closed-by-user' ||
+        error.message?.includes('Cross-Origin-Opener-Policy')) {
+      return signInWithRedirect(auth, googleProvider);
+    }
+    // Re-throw other errors
+    throw error;
+  }
 };
 
 export const db = getFirestore();
