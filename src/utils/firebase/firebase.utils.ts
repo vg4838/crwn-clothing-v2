@@ -49,20 +49,6 @@ export const signInWithGooglePopup = () =>
 export const signInWithGoogleRedirect = () =>
   signInWithRedirect(auth, googleProvider);
 
-// Smart Google sign-in that chooses the best method based on device
-export const signInWithGoogle = async () => {
-  // Import device detection utility
-  const { shouldUseRedirectFlow } = await import('../device/device.utils');
-  
-  if (shouldUseRedirectFlow()) {
-    // Use redirect flow for iOS Safari and mobile devices
-    return signInWithRedirect(auth, googleProvider);
-  } else {
-    // Use popup flow for desktop browsers
-    return signInWithPopup(auth, googleProvider);
-  }
-};
-
 export const db = getFirestore();
 
 export type ObjectToAdd = {

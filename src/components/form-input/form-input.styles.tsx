@@ -33,14 +33,10 @@ export const Input = styled.input`
   padding: 10px 10px 10px 5px;
   display: block;
   width: 100%;
-  max-width: 100%;
   border: none;
   border-radius: 0;
   border-bottom: 1px solid ${subColor};
   margin: 25px 0;
-  box-sizing: border-box;
-  -webkit-appearance: none;
-  -webkit-tap-highlight-color: transparent;
 
   &:focus {
     outline: none;
@@ -49,25 +45,13 @@ export const Input = styled.input`
   &:focus ~ ${FormInputLabel} {
     ${shrinkLabelStyles};
   }
-  
-  /* iOS specific fixes */
-  @media screen and (max-width: 768px) {
-    font-size: 16px; /* Prevent iOS zoom on focus */
-    -webkit-text-size-adjust: 100%;
-  }
 `;
 
 export const Group = styled.div`
   position: relative;
   margin: 45px 0;
-  width: 100%;
-  box-sizing: border-box;
 
   input[type='password'] {
     letter-spacing: 0.3em;
-  }
-  
-  @media screen and (max-width: 480px) {
-    margin: 35px 0;
   }
 `;
