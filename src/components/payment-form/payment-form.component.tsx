@@ -51,10 +51,15 @@ const PaymentForm = () => {
   const elements = useElements();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const amount = useSelector(selectCartTotal);
+  const subtotal = useSelector(selectCartTotal);
   const cartItems = useSelector(selectCartItems);
   const currentUser = useSelector(selectCurrentUser);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  
+  // Calculate tax and final amount
+  const taxRate = 0.08;
+  const taxAmount = Math.round(subtotal * taxRate * 100) / 100;
+  const amount = subtotal + taxAmount;
 
   const paymentHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -66,9 +71,10 @@ const PaymentForm = () => {
     setIsProcessingPayment(true);
 
     // Capture cart data before any async operations
+    const capturedSubtotal = subtotal;
     const capturedAmount = amount;
     const capturedCartItems = [...cartItems];
-    const capturedTax = Math.round(capturedAmount * 0.08 * 100) / 100;
+    const capturedTax = taxAmount;
 
     const response = await fetch('/.netlify/functions/create-payment-intent', {
       method: 'post',
@@ -105,7 +111,7 @@ const PaymentForm = () => {
         const orderData = {
           items: capturedCartItems,
           total: capturedAmount,
-          subtotal: capturedAmount,
+          subtotal: capturedSubtotal,
           shipping: 0,
           tax: capturedTax,
           paymentIntentId: paymentResult.paymentIntent.id,

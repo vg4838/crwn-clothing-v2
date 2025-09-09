@@ -115,19 +115,52 @@ export const Total = styled.div`
   justify-content: flex-end;
   align-items: center;
   
-  span {
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
+  .breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 200px;
+  }
+  
+  .line-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    span {
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+    
+    &.total-line {
+      border-top: 1px solid #e8e9eb;
+      padding-top: 8px;
+      margin-top: 4px;
+      
+      span {
+        font-size: 20px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #f06543;
+      }
+    }
   }
   
   @media screen and (max-width: 800px) {
     justify-content: center;
     padding: 20px 25px;
     
-    span {
-      font-size: 20px;
+    .breakdown {
+      min-width: 180px;
+    }
+    
+    .line-item span {
+      font-size: 14px;
+    }
+    
+    .line-item.total-line span {
+      font-size: 18px;
     }
   }
 `;

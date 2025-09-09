@@ -22,6 +22,11 @@ import {
 const Checkout = () => {
   const cartItems = useSelector(selectCartItems);
   const cartTotal = useSelector(selectCartTotal);
+  
+  // Calculate tax (8% rate, same as payment form)
+  const taxRate = 0.08;
+  const taxAmount = Math.round(cartTotal * taxRate * 100) / 100;
+  const finalTotal = cartTotal + taxAmount;
 
   return (
     <CheckoutContainer>
@@ -49,7 +54,17 @@ const Checkout = () => {
               <CheckoutItem key={cartItem.id} cartItem={cartItem} />
             ))}
             <Total>
-              <span>Total: ${cartTotal}</span>
+              <div className="breakdown">
+                <div className="line-item">
+                  <span>Subtotal: ${cartTotal.toFixed(2)}</span>
+                </div>
+                <div className="line-item">
+                  <span>Tax (8%): ${taxAmount.toFixed(2)}</span>
+                </div>
+                <div className="line-item total-line">
+                  <span>Total: ${finalTotal.toFixed(2)}</span>
+                </div>
+              </div>
             </Total>
           </TableContainer>
         </TableSection>
