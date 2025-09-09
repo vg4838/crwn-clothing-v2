@@ -52,9 +52,8 @@ export const ProductCartContainer = styled.div`
     }
   }
 
-  @media screen and (max-width: 800px) {
-    width: 40vw;
-    height: 320px;
+  @media screen and (max-width: 768px) {
+    height: 300px;
 
     button {
       display: flex;
@@ -63,6 +62,7 @@ export const ProductCartContainer = styled.div`
       padding: 8px 12px;
       font-size: 14px;
       top: 55%;
+      width: 90%;
     }
 
     &:hover {
@@ -79,9 +79,13 @@ export const ProductCartContainer = styled.div`
     }
   }
 
-  @media screen and (max-width: 400px) {
-    width: 80vw;
-    height: 300px;
+  @media screen and (max-width: 480px) {
+    height: 280px;
+    
+    button {
+      font-size: 12px;
+      padding: 6px 10px;
+    }
   }
 `;
 
@@ -95,6 +99,16 @@ export const Footer = styled.div`
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
   border-top: 1px solid #f0f0f0;
   gap: 10px;
+  
+  @media screen and (max-width: 768px) {
+    padding: 12px 15px;
+    gap: 8px;
+  }
+  
+  @media screen and (max-width: 480px) {
+    padding: 10px 12px;
+    gap: 6px;
+  }
 `;
 
 export const Name = styled.span`
@@ -106,6 +120,17 @@ export const Name = styled.span`
   margin-right: 10px;
   text-transform: capitalize;
   letter-spacing: 0.3px;
+  
+  @media screen and (max-width: 768px) {
+    font-size: 14px;
+    margin-right: 8px;
+  }
+  
+  @media screen and (max-width: 480px) {
+    font-size: 13px;
+    margin-right: 6px;
+    line-height: 1.2;
+  }
 `;
 
 export const Price = styled.span`
@@ -117,6 +142,14 @@ export const Price = styled.span`
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  
+  @media screen and (max-width: 768px) {
+    font-size: 16px;
+  }
+  
+  @media screen and (max-width: 480px) {
+    font-size: 15px;
+  }
 `;
 
 export const AddedToCartOverlay = styled.div`
