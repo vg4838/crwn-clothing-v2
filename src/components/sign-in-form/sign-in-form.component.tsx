@@ -1,14 +1,16 @@
 import { useState, FormEvent, ChangeEvent } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import FormInput from '../form-input/form-input.component';
 import Button, { BUTTON_TYPE_CLASSES } from '../button/button.component';
+import Spinner from '../spinner/spinner.component';
 
 import { SignInContainer, ButtonsContainer } from './sign-in-form.styles';
 import {
   googleSignInStart,
   emailSignInStart,
 } from '../../store/user/user.action';
+import { selectUserIsLoading } from '../../store/user/user.selector';
 
 const defaultFormFields = {
   email: '',
@@ -19,6 +21,7 @@ const SignInForm = () => {
   const dispatch = useDispatch();
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = formFields;
+  const isLoading = useSelector(selectUserIsLoading);
 
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
@@ -44,6 +47,10 @@ const SignInForm = () => {
 
     setFormFields({ ...formFields, [name]: value });
   };
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <SignInContainer>

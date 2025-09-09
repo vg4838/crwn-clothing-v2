@@ -8,6 +8,10 @@ import {
   signOutFailed,
   signOutSuccess,
   signInSuccess,
+  googleSignInStart,
+  emailSignInStart,
+  signUpStart,
+  signOutStart,
 } from './user.action';
 
 import { UserData } from '../../utils/firebase/firebase.utils';
@@ -25,12 +29,21 @@ const INITIAL_STATE: UserState = {
 };
 
 export const userReducer = (state = INITIAL_STATE, action: AnyAction) => {
+  if (
+    googleSignInStart.match(action) ||
+    emailSignInStart.match(action) ||
+    signUpStart.match(action) ||
+    signOutStart.match(action)
+  ) {
+    return { ...state, isLoading: true, error: null };
+  }
+
   if (signInSuccess.match(action)) {
-    return { ...state, currentUser: action.payload };
+    return { ...state, currentUser: action.payload, isLoading: false, error: null };
   }
 
   if (signOutSuccess.match(action)) {
-    return { ...state, currentUser: null };
+    return { ...state, currentUser: null, isLoading: false, error: null };
   }
 
   if (
@@ -38,7 +51,7 @@ export const userReducer = (state = INITIAL_STATE, action: AnyAction) => {
     signUpFailed.match(action) ||
     signOutFailed.match(action)
   ) {
-    return { ...state, error: action.payload };
+    return { ...state, error: action.payload, isLoading: false };
   }
 
   return state;

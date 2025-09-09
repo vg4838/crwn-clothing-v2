@@ -25,6 +25,12 @@ import {
   AdditionalInformation,
 } from '../../utils/firebase/firebase.utils';
 
+// Navigation helper function
+const navigateTo = (path: string) => {
+  window.history.pushState({}, '', path);
+  window.dispatchEvent(new PopStateEvent('popstate'));
+};
+
 export function* getSnapshotFromUserAuth(
   userAuth: User,
   additionalDetails?: AdditionalInformation
@@ -40,6 +46,8 @@ export function* getSnapshotFromUserAuth(
       yield* put(
         signInSuccess({ id: userSnapshot.id, ...userSnapshot.data() })
       );
+      // Navigate to home page after successful sign-in
+      navigateTo('/');
     }
   } catch (error) {
     yield* put(signInFailed(error as Error));
@@ -107,6 +115,8 @@ export function* signOut() {
   try {
     yield* call(signOutUser);
     yield* put(signOutSuccess());
+    // Navigate to sign-in page after successful sign-out
+    navigateTo('/auth');
   } catch (error) {
     yield* put(signOutFailed(error as Error));
   }

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, forwardRef } from 'react';
 
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -13,16 +13,16 @@ import {
   CartItems,
 } from './cart-dropdown.styles';
 
-const CartDropdown = () => {
+const CartDropdown = forwardRef<HTMLDivElement>((props, ref) => {
   const cartItems = useSelector(selectCartItems);
   const navigate = useNavigate();
 
   const goToCheckoutHandler = useCallback(() => {
     navigate('/checkout');
-  }, []);
+  }, [navigate]);
 
   return (
-    <CartDropdownContainer>
+    <CartDropdownContainer ref={ref}>
       <CartItems>
         {cartItems.length ? (
           cartItems.map((item) => <CartItem key={item.id} cartItem={item} />)
@@ -33,6 +33,8 @@ const CartDropdown = () => {
       <Button onClick={goToCheckoutHandler}>GO TO CHECKOUT</Button>
     </CartDropdownContainer>
   );
-};
+});
+
+CartDropdown.displayName = 'CartDropdown';
 
 export default CartDropdown;

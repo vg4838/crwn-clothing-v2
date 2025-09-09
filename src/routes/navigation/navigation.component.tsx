@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useRef, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -8,6 +8,7 @@ import CartDropdown from '../../components/cart-dropdown/cart-dropdown.component
 import { selectIsCartOpen } from '../../store/cart/cart.selector';
 import { selectCurrentUser } from '../../store/user/user.selector';
 import { signOutStart } from '../../store/user/user.action';
+import { setIsCartOpen } from '../../store/cart/cart.action';
 
 import { ReactComponent as CrwnLogo } from '../../assets/crown.svg';
 
@@ -22,8 +23,29 @@ const Navigation = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(selectCurrentUser);
   const isCartOpen = useSelector(selectIsCartOpen);
+  const cartDropdownRef = useRef<HTMLDivElement>(null);
 
   const signOutUser = () => dispatch(signOutStart());
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isCartOpen &&
+        cartDropdownRef.current &&
+        !cartDropdownRef.current.contains(event.target as Node)
+      ) {
+        dispatch(setIsCartOpen(false));
+      }
+    };
+
+    if (isCartOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isCartOpen, dispatch]);
 
   return (
     <Fragment>
@@ -43,7 +65,7 @@ const Navigation = () => {
           )}
           <CartIcon />
         </NavLinks>
-        {isCartOpen && <CartDropdown />}
+        {isCartOpen && <CartDropdown ref={cartDropdownRef} />}
       </NavigationContainer>
       <Outlet />
     </Fragment>
