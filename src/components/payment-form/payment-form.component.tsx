@@ -65,12 +65,17 @@ const PaymentForm = () => {
 
     setIsProcessingPayment(true);
 
+    // Capture cart data before any async operations
+    const capturedAmount = amount;
+    const capturedCartItems = [...cartItems];
+    const capturedTax = Math.round(capturedAmount * 0.08 * 100) / 100;
+
     const response = await fetch('/.netlify/functions/create-payment-intent', {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ amount: amount * 100 }),
+      body: JSON.stringify({ amount: capturedAmount * 100 }),
     }).then((res) => res.json());
 
     const {
@@ -96,13 +101,13 @@ const PaymentForm = () => {
       alert(paymentResult.error);
     } else {
       if (paymentResult.paymentIntent.status === 'succeeded') {
-        // Create order in Firebase
+        // Create order in Firebase with captured values
         const orderData = {
-          items: cartItems,
-          total: amount,
-          subtotal: amount,
+          items: capturedCartItems,
+          total: capturedAmount,
+          subtotal: capturedAmount,
           shipping: 0,
-          tax: 0,
+          tax: capturedTax,
           paymentIntentId: paymentResult.paymentIntent.id,
           userEmail: currentUser?.email || 'guest@example.com',
         };

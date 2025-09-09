@@ -163,12 +163,31 @@ export const createOrderDocument = async (orderData: any) => {
   
   const orderDocRef = doc(db, 'orders', orderId);
   
+  // Calculate totals from items if not provided or if they are 0
+  let calculatedSubtotal = orderData.subtotal || 0;
+  let calculatedTotal = orderData.total || 0;
+  
+  if (calculatedSubtotal === 0 && orderData.items && orderData.items.length > 0) {
+    calculatedSubtotal = orderData.items.reduce((total: number, item: any) => {
+      return total + (item.price * item.quantity);
+    }, 0);
+  }
+  
+  const calculatedTax = orderData.tax || Math.round(calculatedSubtotal * 0.08 * 100) / 100;
+  const calculatedShipping = orderData.shipping || 0;
+  
+  if (calculatedTotal === 0) {
+    calculatedTotal = calculatedSubtotal + calculatedTax + calculatedShipping;
+  }
+  
   const order = {
     id: orderId,
     orderNumber,
     ...orderData,
-    shipping: 0, // Free shipping for now
-    tax: Math.round(orderData.subtotal * 0.08 * 100) / 100, // 8% tax
+    subtotal: calculatedSubtotal,
+    total: calculatedTotal,
+    shipping: calculatedShipping,
+    tax: calculatedTax,
   };
 
   await setDoc(orderDocRef, order);
