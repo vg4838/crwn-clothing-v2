@@ -80,7 +80,7 @@ const HamburgerMenu: FC = () => {
               </MenuItem>
             ) : (
               <MenuItem>
-                <MenuLink as={Link} to="/auth" onClick={closeMenu}>
+                <MenuLink as={Link} to="/sign-in" onClick={closeMenu}>
                   Sign In
                 </MenuLink>
               </MenuItem>

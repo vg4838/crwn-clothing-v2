@@ -90,7 +90,7 @@ const Orders = () => {
   };
 
   if (!currentUser) {
-    navigate('/auth');
+    navigate('/sign-in');
     return null;
   }
 

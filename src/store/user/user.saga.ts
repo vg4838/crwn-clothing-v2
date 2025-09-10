@@ -209,6 +209,9 @@ export function* signOut() {
     yield* put(signOutSuccess());
     // Clear cart when user signs out
     yield* put(setCartItems([]));
+    
+    // Navigate to sign-in page after successful sign out
+    navigateToPage('/sign-in');
   } catch (error) {
     yield* put(signOutFailed(error as Error));
   }
