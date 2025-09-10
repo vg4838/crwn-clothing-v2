@@ -13,6 +13,7 @@ import {
   signUpFailed,
   signOutSuccess,
   signOutFailed,
+  googleSignInCancelled,
   EmailSignInStart,
   SignUpStart,
   SignUpSuccess,
@@ -91,7 +92,7 @@ export function* getSnapshotFromUserAuth(
 
 export function* signInWithGoogle() {
   try {
-    const result = yield* call(signInWithGoogleAuth);
+    const result: any = yield* call(signInWithGoogleAuth);
     // Handle both popup and redirect results
     if (result && result.user) {
       // Popup authentication - we get the user immediately
@@ -99,8 +100,39 @@ export function* signInWithGoogle() {
     }
     // If redirect authentication was used, the user will be redirected
     // and the authentication state will be handled by getCurrentUser on return
-  } catch (error) {
-    yield* put(signInFailed(error as Error));
+  } catch (error: any) {
+    console.log('Google sign-in saga error:', error);
+    
+    // Handle specific error types gracefully
+    if (error.message?.includes('POPUP_CANCELLED')) {
+      // Don't show error for user cancellation, just clear loading state
+      console.log('User cancelled Google sign-in');
+      yield* put(googleSignInCancelled());
+      return;
+    }
+    
+    if (error.message?.includes('POPUP_TIMEOUT')) {
+      yield* put(signInFailed(new Error('Sign-in timed out. Please try again.')));
+      return;
+    }
+    
+    if (error.message?.includes('POPUP_BLOCKED')) {
+      yield* put(signInFailed(new Error('Popup blocked. Please allow popups and try again.')));
+      return;
+    }
+    
+    if (error.message?.includes('NETWORK_ERROR')) {
+      yield* put(signInFailed(new Error('Network error. Please check your connection.')));
+      return;
+    }
+    
+    if (error.message?.includes('BROWSER_POLICY')) {
+      yield* put(signInFailed(new Error('Browser security issue. Please refresh and try again.')));
+      return;
+    }
+    
+    // For any other errors, show a generic message
+    yield* put(signInFailed(new Error('Google sign-in failed. Please try again.')));
   }
 }
 

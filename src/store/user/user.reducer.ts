@@ -9,6 +9,7 @@ import {
   signOutSuccess,
   signInSuccess,
   googleSignInStart,
+  googleSignInCancelled,
   emailSignInStart,
   signUpStart,
   signOutStart,
@@ -68,6 +69,11 @@ export const userReducer = (state = INITIAL_STATE, action: AnyAction) => {
       console.error('Error removing cached user from localStorage:', error);
     }
     return { ...state, currentUser: null, isLoading: false, error: null };
+  }
+
+  if (googleSignInCancelled.match(action)) {
+    // Clear loading state when user cancels Google sign-in popup
+    return { ...state, isLoading: false, error: null };
   }
 
   if (

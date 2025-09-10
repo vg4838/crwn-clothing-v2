@@ -22,6 +22,8 @@ export type SetCurrentUser = ActionWithPayload<
 
 export type GoogleSignInStart = Action<USER_ACTION_TYPES.GOOGLE_SIGN_IN_START>;
 
+export type GoogleSignInCancelled = Action<USER_ACTION_TYPES.GOOGLE_SIGN_IN_CANCELLED>;
+
 export type SignUpStart = ActionWithPayload<
   USER_ACTION_TYPES.SIGN_UP_START,
   { email: string; password: string; displayName: string }
@@ -72,6 +74,10 @@ export const setCurrentUser = withMatcher(
 
 export const googleSignInStart = withMatcher(
   (): GoogleSignInStart => createAction(USER_ACTION_TYPES.GOOGLE_SIGN_IN_START)
+);
+
+export const googleSignInCancelled = withMatcher(
+  (): GoogleSignInCancelled => createAction(USER_ACTION_TYPES.GOOGLE_SIGN_IN_CANCELLED)
 );
 
 export const emailSignInStart = withMatcher(

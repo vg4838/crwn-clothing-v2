@@ -50,20 +50,53 @@ export const signInWithGooglePopup = () =>
 export const signInWithGoogleRedirect = () =>
   signInWithRedirect(auth, googleProvider);
 
-// Smart sign-in function that tries popup first, falls back to redirect on error
+// Enhanced sign-in function with timeout and better error handling
 export const signInWithGoogle = async () => {
   try {
-    // Try popup first (works on desktop)
-    return await signInWithPopup(auth, googleProvider);
+    // Create a timeout promise
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error('POPUP_TIMEOUT'));
+      }, 30000); // 30 second timeout
+    });
+
+    // Race between popup sign-in and timeout
+    const result = await Promise.race([
+      signInWithPopup(auth, googleProvider),
+      timeoutPromise
+    ]);
+
+    return result;
   } catch (error: any) {
-    // If popup fails (CORS, iOS, etc.), fall back to redirect
-    if (error.code === 'auth/popup-blocked' || 
-        error.code === 'auth/popup-closed-by-user' ||
-        error.message?.includes('Cross-Origin-Opener-Policy')) {
-      return signInWithRedirect(auth, googleProvider);
+    console.log('Google sign-in error:', error);
+    
+    // Handle different error scenarios
+    if (error.message === 'POPUP_TIMEOUT') {
+      throw new Error('POPUP_TIMEOUT: Sign-in popup timed out. Please try again.');
     }
-    // Re-throw other errors
-    throw error;
+    
+    if (error.code === 'auth/popup-closed-by-user') {
+      throw new Error('POPUP_CANCELLED: Sign-in was cancelled. Please try again if you want to sign in.');
+    }
+    
+    if (error.code === 'auth/popup-blocked') {
+      throw new Error('POPUP_BLOCKED: Popup was blocked by your browser. Please allow popups for this site or try again.');
+    }
+    
+    if (error.code === 'auth/cancelled-popup-request') {
+      throw new Error('POPUP_CANCELLED: Sign-in was cancelled. Please try again if you want to sign in.');
+    }
+    
+    if (error.code === 'auth/network-request-failed') {
+      throw new Error('NETWORK_ERROR: Network error occurred. Please check your connection and try again.');
+    }
+    
+    if (error.message?.includes('Cross-Origin-Opener-Policy')) {
+      throw new Error('BROWSER_POLICY: Browser security policy prevented sign-in. Please try refreshing the page.');
+    }
+    
+    // For any other errors, provide a generic message
+    throw new Error(`SIGN_IN_ERROR: ${error.message || 'An unexpected error occurred during sign-in.'}`);
   }
 };
 

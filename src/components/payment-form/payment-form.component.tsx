@@ -70,60 +70,107 @@ const PaymentForm = () => {
 
     setIsProcessingPayment(true);
 
-    // Capture cart data before any async operations
-    const capturedSubtotal = subtotal;
-    const capturedAmount = amount;
-    const capturedCartItems = [...cartItems];
-    const capturedTax = taxAmount;
+    try {
+      // Capture cart data before any async operations
+      const capturedSubtotal = subtotal;
+      const capturedAmount = amount;
+      const capturedCartItems = [...cartItems];
+      const capturedTax = taxAmount;
 
-    const response = await fetch('/.netlify/functions/create-payment-intent', {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ amount: capturedAmount * 100 }),
-    }).then((res) => res.json());
+      // Create payment intent with error handling
+      let response;
+      try {
+        const fetchResponse = await fetch('/.netlify/functions/create-payment-intent', {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ amount: capturedAmount * 100 }),
+        });
 
-    const {
-      paymentIntent: { client_secret },
-    } = response;
+        if (!fetchResponse.ok) {
+          throw new Error(`Payment service error: ${fetchResponse.status}`);
+        }
 
-    const cardDetails = elements.getElement(CardElement);
-
-    if (!ifValidCardElement(cardDetails)) return;
-
-    const paymentResult = await stripe.confirmCardPayment(client_secret, {
-      payment_method: {
-        card: cardDetails,
-        billing_details: {
-          name: currentUser ? currentUser.displayName : 'Guest',
-        },
-      },
-    });
-
-    setIsProcessingPayment(false);
-
-    if (paymentResult.error) {
-      alert(paymentResult.error);
-    } else {
-      if (paymentResult.paymentIntent.status === 'succeeded') {
-        // Create order in Firebase with captured values
-        const orderData = {
-          items: capturedCartItems,
-          total: capturedAmount,
-          subtotal: capturedSubtotal,
-          shipping: 0,
-          tax: capturedTax,
-          paymentIntentId: paymentResult.paymentIntent.id,
-          userEmail: currentUser?.email || 'guest@example.com',
-        };
-
-        dispatch(createOrderStart(orderData));
-        dispatch(clearCart());
-
-        // Navigate to thank you page with order details
-        navigate(`/thank-you?orderId=${paymentResult.paymentIntent.id}&payment_intent=${paymentResult.paymentIntent.id}`);
+        response = await fetchResponse.json();
+      } catch (error) {
+        console.error('Payment intent creation failed:', error);
+        alert('Failed to initialize payment. Please check your connection and try again.');
+        setIsProcessingPayment(false);
+        return;
       }
+
+      const {
+        paymentIntent: { client_secret },
+      } = response;
+
+      const cardDetails = elements.getElement(CardElement);
+
+      if (!ifValidCardElement(cardDetails)) {
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      // Confirm payment with error handling
+      const paymentResult = await stripe.confirmCardPayment(client_secret, {
+        payment_method: {
+          card: cardDetails,
+          billing_details: {
+            name: currentUser ? currentUser.displayName : 'Guest',
+          },
+        },
+      });
+
+      if (paymentResult.error) {
+        console.error('Payment confirmation failed:', paymentResult.error);
+        
+        // Handle specific Stripe error types
+        let errorMessage = 'Payment failed. Please try again.';
+        
+        if (paymentResult.error.type === 'card_error') {
+          errorMessage = paymentResult.error.message || 'Your card was declined. Please try a different card.';
+        } else if (paymentResult.error.type === 'validation_error') {
+          errorMessage = 'Please check your card details and try again.';
+        } else if (paymentResult.error.type === 'api_connection_error') {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        } else if (paymentResult.error.type === 'api_error') {
+          errorMessage = 'Payment service temporarily unavailable. Please try again later.';
+        } else if (paymentResult.error.type === 'authentication_error') {
+          errorMessage = 'Authentication failed. Please refresh the page and try again.';
+        } else if (paymentResult.error.type === 'rate_limit_error') {
+          errorMessage = 'Too many requests. Please wait a moment and try again.';
+        }
+        
+        alert(errorMessage);
+      } else {
+        if (paymentResult.paymentIntent.status === 'succeeded') {
+          // Create order in Firebase with captured values
+          const orderData = {
+            items: capturedCartItems,
+            total: capturedAmount,
+            subtotal: capturedSubtotal,
+            shipping: 0,
+            tax: capturedTax,
+            paymentIntentId: paymentResult.paymentIntent.id,
+            userEmail: currentUser?.email || 'guest@example.com',
+          };
+
+          dispatch(createOrderStart(orderData));
+          dispatch(clearCart());
+
+          // Navigate to thank you page with order details
+          navigate(`/thank-you?orderId=${paymentResult.paymentIntent.id}&payment_intent=${paymentResult.paymentIntent.id}`);
+        } else {
+          // Handle other payment statuses
+          alert('Payment was not completed. Please try again.');
+        }
+      }
+    } catch (error) {
+      console.error('Unexpected payment error:', error);
+      alert('An unexpected error occurred. Please try again.');
+    } finally {
+      // Always clear loading state
+      setIsProcessingPayment(false);
     }
   };
 

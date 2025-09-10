@@ -85,6 +85,24 @@ const SignInForm = () => {
     
     const errorMessage = error.message;
     
+    // Handle enhanced Google sign-in errors
+    if (errorMessage.includes('Sign-in timed out')) {
+      return 'Google sign-in timed out. Please try again.';
+    }
+    if (errorMessage.includes('Popup blocked')) {
+      return 'Popup was blocked by your browser. Please allow popups for this site and try again.';
+    }
+    if (errorMessage.includes('Network error')) {
+      return 'Network error occurred. Please check your connection and try again.';
+    }
+    if (errorMessage.includes('Browser security issue')) {
+      return 'Browser security settings prevented sign-in. Please refresh the page and try again.';
+    }
+    if (errorMessage.includes('Google sign-in failed')) {
+      return 'Google sign-in encountered an issue. Please try again.';
+    }
+    
+    // Handle email/password sign-in errors
     if (errorMessage.includes('auth/user-not-found')) {
       return 'No account found with this email address.';
     }
