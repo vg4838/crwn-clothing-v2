@@ -1,8 +1,10 @@
-import { takeLatest, put, all, call } from 'typed-redux-saga/macro';
+import { takeLatest, put, all, call, select } from 'typed-redux-saga/macro';
 import { User } from 'firebase/auth';
 
 import { USER_ACTION_TYPES } from './user.types';
 import { setCartItems } from '../cart/cart.action';
+import { selectCurrentUser } from './user.selector';
+import { selectCartItems } from '../cart/cart.selector';
 
 import {
   signInSuccess,
@@ -48,9 +50,23 @@ export function* getSnapshotFromUserAuth(
     );
 
     if (userSnapshot) {
-      yield* put(
-        signInSuccess({ ...userSnapshot.data(), id: userSnapshot.id })
-      );
+      const userData = { ...userSnapshot.data(), id: userSnapshot.id };
+      yield* put(signInSuccess(userData));
+      
+      // Restore user's saved cart (only for returning users, not new sign-ups)
+      if (!isSignUp) {
+        try {
+          const savedCart = localStorage.getItem(`cart_${userData.id}`);
+          if (savedCart) {
+            const cartItems = JSON.parse(savedCart);
+            yield* put(setCartItems(cartItems));
+            // Remove the saved cart since it's now restored
+            localStorage.removeItem(`cart_${userData.id}`);
+          }
+        } catch (error) {
+          console.error('Error restoring cart from localStorage:', error);
+        }
+      }
       
       // Handle navigation after successful authentication
       if (isSignUp) {
@@ -110,7 +126,15 @@ export function* signInWithEmail({
 export function* isUserAuthenticated() {
   try {
     const userAuth = yield* call(getCurrentUser);
-    if (!userAuth) return;
+    if (!userAuth) {
+      // If no Firebase user but we have cached data, clear the cache
+      const cachedUser = localStorage.getItem('currentUser');
+      if (cachedUser) {
+        localStorage.removeItem('currentUser');
+        yield* put(signOutSuccess());
+      }
+      return;
+    }
     // Only update authentication state, don't navigate
     const userSnapshot = yield* call(
       createUserDocumentFromAuth,
@@ -118,11 +142,32 @@ export function* isUserAuthenticated() {
     );
 
     if (userSnapshot) {
-      yield* put(
-        signInSuccess({ ...userSnapshot.data(), id: userSnapshot.id })
-      );
+      const userData = { ...userSnapshot.data(), id: userSnapshot.id };
+      yield* put(signInSuccess(userData));
+      
+      // Check if user has a saved cart and current cart is empty
+      const currentCartItems = yield* select(selectCartItems);
+      if (currentCartItems.length === 0) {
+        try {
+          const savedCart = localStorage.getItem(`cart_${userData.id}`);
+          if (savedCart) {
+            const cartItems = JSON.parse(savedCart);
+            yield* put(setCartItems(cartItems));
+            // Remove the saved cart since it's now restored
+            localStorage.removeItem(`cart_${userData.id}`);
+          }
+        } catch (error) {
+          console.error('Error restoring cart from localStorage:', error);
+        }
+      }
     }
   } catch (error) {
+    // If Firebase auth fails, clear cached data
+    const cachedUser = localStorage.getItem('currentUser');
+    if (cachedUser) {
+      localStorage.removeItem('currentUser');
+      yield* put(signOutSuccess());
+    }
     yield* put(signInFailed(error as Error));
   }
 }
@@ -148,6 +193,18 @@ export function* signUp({
 
 export function* signOut() {
   try {
+    // Save current user's cart before signing out
+    const currentUser = yield* select(selectCurrentUser);
+    const cartItems = yield* select(selectCartItems);
+    
+    if (currentUser && cartItems.length > 0) {
+      try {
+        localStorage.setItem(`cart_${currentUser.id}`, JSON.stringify(cartItems));
+      } catch (error) {
+        console.error('Error saving cart to localStorage:', error);
+      }
+    }
+    
     yield* call(signOutUser);
     yield* put(signOutSuccess());
     // Clear cart when user signs out

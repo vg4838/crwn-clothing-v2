@@ -1,6 +1,4 @@
 import { useSelector } from 'react-redux';
-import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import {
   selectCartItems,
@@ -26,27 +24,10 @@ const Checkout = () => {
   const cartItems = useSelector(selectCartItems);
   const cartTotal = useSelector(selectCartTotal);
   const currentUser = useSelector(selectCurrentUser);
-  const navigate = useNavigate();
-  const hasRedirected = useRef(false);
-  
-  useEffect(() => {
-    // Only redirect if we're certain the user is not authenticated (null, not undefined)
-    // and we haven't already redirected to prevent loops
-    if (currentUser === null && !hasRedirected.current) {
-      hasRedirected.current = true;
-      sessionStorage.setItem('redirectAfterAuth', '/checkout');
-      navigate('/auth');
-    }
-  }, [currentUser, navigate]);
   
   // Show loading while authentication state is being determined
   if (currentUser === undefined) {
     return <div>Loading...</div>;
-  }
-  
-  // Don't render checkout if user is not authenticated
-  if (currentUser === null) {
-    return null;
   }
   
   // Calculate tax (8% rate, same as payment form)

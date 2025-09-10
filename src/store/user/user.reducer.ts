@@ -22,8 +22,20 @@ export type UserState = {
   readonly error: Error | null;
 };
 
+// Helper function to get cached user from localStorage
+const getCachedUser = (): UserData | null => {
+  try {
+    const cachedUser = localStorage.getItem('currentUser');
+    return cachedUser ? JSON.parse(cachedUser) : null;
+  } catch (error) {
+    console.error('Error parsing cached user:', error);
+    localStorage.removeItem('currentUser');
+    return null;
+  }
+};
+
 const INITIAL_STATE: UserState = {
-  currentUser: null,
+  currentUser: getCachedUser(), // Initialize from localStorage
   isLoading: false,
   error: null,
 };
@@ -39,10 +51,22 @@ export const userReducer = (state = INITIAL_STATE, action: AnyAction) => {
   }
 
   if (signInSuccess.match(action)) {
+    // Cache user data to localStorage
+    try {
+      localStorage.setItem('currentUser', JSON.stringify(action.payload));
+    } catch (error) {
+      console.error('Error caching user to localStorage:', error);
+    }
     return { ...state, currentUser: action.payload, isLoading: false, error: null };
   }
 
   if (signOutSuccess.match(action)) {
+    // Clear cached user data from localStorage
+    try {
+      localStorage.removeItem('currentUser');
+    } catch (error) {
+      console.error('Error removing cached user from localStorage:', error);
+    }
     return { ...state, currentUser: null, isLoading: false, error: null };
   }
 
