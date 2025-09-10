@@ -2,6 +2,7 @@ import { takeLatest, put, all, call } from 'typed-redux-saga/macro';
 import { User } from 'firebase/auth';
 
 import { USER_ACTION_TYPES } from './user.types';
+import { setCartItems } from '../cart/cart.action';
 
 import {
   signInSuccess,
@@ -48,7 +49,7 @@ export function* getSnapshotFromUserAuth(
 
     if (userSnapshot) {
       yield* put(
-        signInSuccess({ id: userSnapshot.id, ...userSnapshot.data() })
+        signInSuccess({ ...userSnapshot.data(), id: userSnapshot.id })
       );
       
       // Handle navigation after successful authentication
@@ -110,7 +111,17 @@ export function* isUserAuthenticated() {
   try {
     const userAuth = yield* call(getCurrentUser);
     if (!userAuth) return;
-    yield* call(getSnapshotFromUserAuth, userAuth);
+    // Only update authentication state, don't navigate
+    const userSnapshot = yield* call(
+      createUserDocumentFromAuth,
+      userAuth
+    );
+
+    if (userSnapshot) {
+      yield* put(
+        signInSuccess({ ...userSnapshot.data(), id: userSnapshot.id })
+      );
+    }
   } catch (error) {
     yield* put(signInFailed(error as Error));
   }
@@ -139,6 +150,8 @@ export function* signOut() {
   try {
     yield* call(signOutUser);
     yield* put(signOutSuccess());
+    // Clear cart when user signs out
+    yield* put(setCartItems([]));
   } catch (error) {
     yield* put(signOutFailed(error as Error));
   }
@@ -147,6 +160,8 @@ export function* signOut() {
 export function* signInAfterSignUp({
   payload: { user, additionalDetails },
 }: SignUpSuccess) {
+  // Clear cart for new users to ensure clean slate
+  yield* put(setCartItems([]));
   yield* call(getSnapshotFromUserAuth, user, additionalDetails, true);
 }
 

@@ -104,6 +104,7 @@ export type AdditionalInformation = {
 };
 
 export type UserData = {
+  id: string;
   createdAt: Date;
   displayName: string;
   email: string;

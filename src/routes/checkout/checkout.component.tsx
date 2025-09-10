@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -27,17 +27,25 @@ const Checkout = () => {
   const cartTotal = useSelector(selectCartTotal);
   const currentUser = useSelector(selectCurrentUser);
   const navigate = useNavigate();
+  const hasRedirected = useRef(false);
   
   useEffect(() => {
-    // If user is not authenticated, redirect to auth page and set redirect context
-    if (!currentUser) {
+    // Only redirect if we're certain the user is not authenticated (null, not undefined)
+    // and we haven't already redirected to prevent loops
+    if (currentUser === null && !hasRedirected.current) {
+      hasRedirected.current = true;
       sessionStorage.setItem('redirectAfterAuth', '/checkout');
       navigate('/auth');
     }
   }, [currentUser, navigate]);
   
+  // Show loading while authentication state is being determined
+  if (currentUser === undefined) {
+    return <div>Loading...</div>;
+  }
+  
   // Don't render checkout if user is not authenticated
-  if (!currentUser) {
+  if (currentUser === null) {
     return null;
   }
   

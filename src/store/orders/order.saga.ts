@@ -27,7 +27,7 @@ export function* createOrder({ payload }: CreateOrderStart) {
 
     const orderData = {
       ...payload,
-      userId: currentUser.displayName || 'user', // Use displayName as user identifier
+      userId: currentUser.id, // Use unique Firebase user ID
       status: 'processing' as const,
       createdAt: new Date(),
       paymentMethod: 'Credit Card',
@@ -50,7 +50,7 @@ export function* fetchUserOrders() {
       return;
     }
 
-    const orders = yield* call(getUserOrders, currentUser.displayName || 'user');
+    const orders = yield* call(getUserOrders, currentUser.id);
     yield* put(fetchOrdersSuccess(orders));
   } catch (error) {
     yield* put(fetchOrdersFailed(error as Error));
